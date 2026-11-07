@@ -648,6 +648,48 @@ func translateModel(resolved *translator.ResolvedModelConfig) (*configv1.ADKMode
 		}
 
 		return mistral, modelDeploymentData, nil
+	case v1alpha3.ModelProviderXAI:
+		if !tokenPassthrough && model.Spec.APIKeySecret != "" {
+			modelDeploymentData.EnvVars = append(modelDeploymentData.EnvVars, corev1.EnvVar{
+				Name: env.XAIAPIKey.Name(),
+				ValueFrom: &corev1.EnvVarSource{
+					SecretKeyRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: model.Spec.APIKeySecret,
+						},
+						Key: model.Spec.APIKeySecretKey,
+					},
+				},
+			})
+		}
+		xai := &configv1.ADKModelConfig{
+			Model:    model.Spec.Model,
+			Headers:  model.Spec.DefaultHeaders,
+			Provider: &configv1.ADKModelConfig_Xai{Xai: &configv1.ADKXAI{}},
+		}
+		populateTLSFields(xai, model.Spec.TLS)
+		xai.ApiKeyPassthrough = tokenPassthrough
+
+		if model.Spec.XAI != nil {
+			spec := model.Spec.XAI
+			if spec.BaseURL != nil {
+				xai.GetXai().BaseUrl = *spec.BaseURL
+			}
+			if spec.Temperature != nil {
+				xai.GetXai().Temperature = utils.ParseStringToFloat64(*spec.Temperature)
+			}
+			if spec.TopP != nil {
+				xai.GetXai().TopP = utils.ParseStringToFloat64(*spec.TopP)
+			}
+			if spec.MaxTokens != nil {
+				xai.GetXai().MaxTokens = runtimeInt(spec.MaxTokens)
+			}
+			if spec.Timeout != nil {
+				xai.GetXai().Timeout = runtimeDuration(spec.Timeout)
+			}
+		}
+
+		return xai, modelDeploymentData, nil
 	default:
 		return nil, nil, fmt.Errorf("unsupported model provider: %s", model.Spec.Provider)
 	}

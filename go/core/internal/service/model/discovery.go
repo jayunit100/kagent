@@ -328,6 +328,18 @@ func (s *Service) ListSupportedModels(context.Context) ProviderModels {
 			// SAP
 			{Name: "sap-abap-1", FunctionCalling: false},
 		},
+		v1alpha3.ModelProviderXAI: {
+			// Current xAI text models. Source: https://docs.x.ai/developers/models
+			// Image, video, and voice models are separate APIs and are not listed.
+			{Name: "grok-4.7", FunctionCalling: true},
+			{Name: "grok-4.6", FunctionCalling: true},
+			{Name: "grok-4.5", FunctionCalling: true},
+			{Name: "grok-4.3", FunctionCalling: true},
+			{Name: "grok-4.20-0309-reasoning", FunctionCalling: true},
+			{Name: "grok-4.20-0309-non-reasoning", FunctionCalling: true},
+			{Name: "grok-4.20-multi-agent-0309", FunctionCalling: true},
+			{Name: "grok-build-0.1", FunctionCalling: true},
+		},
 		v1alpha3.ModelProviderMistral: {
 			{Name: "mistral-large-latest", FunctionCalling: true},
 			{Name: "mistral-medium-latest", FunctionCalling: true},
@@ -359,6 +371,7 @@ func (s *Service) ListSupportedModelProviders(context.Context) []ProviderDefinit
 		{v1alpha3.ModelProviderBedrock, reflect.TypeFor[v1alpha3.BedrockConfig]()},
 		{v1alpha3.ModelProviderSAPAICore, reflect.TypeFor[v1alpha3.SAPAICoreConfig]()},
 		{v1alpha3.ModelProviderMistral, reflect.TypeFor[v1alpha3.MistralConfig]()},
+		{v1alpha3.ModelProviderXAI, reflect.TypeFor[v1alpha3.XAIConfig]()},
 	}
 
 	providers := []ProviderDefinition{}

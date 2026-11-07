@@ -96,6 +96,8 @@ func ProviderName(provider v1alpha3.ModelProvider) string {
 		return conv.GenAIProviderNameGCPVertexAI
 	case v1alpha3.ModelProviderFoundry:
 		return conv.GenAIProviderNameAzureAIInference
+	case v1alpha3.ModelProviderXAI:
+		return conv.GenAIProviderNameXAI
 	case v1alpha3.ModelProviderOllama:
 		return "ollama"
 	case v1alpha3.ModelProviderSAPAICore:
